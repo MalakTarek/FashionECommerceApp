@@ -280,34 +280,49 @@ class _ProductViewPageState extends State<ProductViewPage> {
               ),
                   Column(
                     children: [
-                        Text('Overall Rating'),
-                            Rating(widget.product), // Assuming this is another custom widget showing overall rating
-                      if (_userRepository.getUserRole() == 'Shopper')
-                        Column(
-                          children: [
-                           SizedBox(height: 10),
-                            Text('Rate this product: '),
-                           Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      5,
-                          (index) => IconButton(
-                        icon: Icon(
-                          index < userRating ? Icons.star : Icons.star_border,
-                          color: Colors.amber,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            userRating = index + 1;
-                          });
-                          rateProduct(widget.product.pid, userRating);
+                      Text('Overall Rating'),
+                      Rating(widget.product), // Assuming this is another custom widget showing overall rating
+                      FutureBuilder<String?>(
+                        future: _userRepository.getUserRole(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (snapshot.hasData && snapshot.data == 'Shopper') {
+                            return Column(
+                              children: [
+                                SizedBox(height: 10),
+                                Text('Rate this product: '),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(
+                                    5,
+                                        (index) => IconButton(
+                                      icon: Icon(
+                                        index < userRating ? Icons.star : Icons.star_border,
+                                        color: Colors.amber,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          userRating = index + 1;
+                                        });
+                                        rateProduct(widget.product.pid, userRating);
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return SizedBox(); // Return an empty widget for non-Shoppers
+                          }
                         },
-                ),
-              ),
-            ),
-          ],
-        ),
-              Center(
+                      ),
+                    ],
+
+                  ),
+                    Center(
                 child: FutureBuilder<String?>(
                   future: _userRepository.getUserRole(),
                   builder: (context, snapshot) {
@@ -353,14 +368,13 @@ class _ProductViewPageState extends State<ProductViewPage> {
               ),
             ],
           ),
+        )
           ]
         ),
         )
-      ],
     )
-    )
-      )
     );
+
   }
 
 
@@ -505,33 +519,45 @@ class _ProductViewPageState extends State<ProductViewPage> {
                     SizedBox(height: 20),
                     // Text field for submitting new comment
                     // Show comment submission section only for Shopper
-                    if (_userRepository.getUserRole() == 'Shopper')
-                      Column(
-                        children: [
-                          TextField(
-                            controller: _commentController,
-                            decoration: InputDecoration(
-                              labelText: 'Enter your comment...',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              //submitComment(context);
-                              _productRepository.addCommentToProduct(widget.product.pid , _commentController.text);
+                    FutureBuilder<String?>(
+                      future: _userRepository.getUserRole(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (snapshot.hasData && snapshot.data == 'Shopper') {
+                          return Column(
+                            children: [
+                              TextField(
+                                controller: _commentController,
+                                decoration: InputDecoration(
+                                  labelText: 'Enter your comment...',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  //submitComment(context);
+                                  _productRepository.addCommentToProduct(widget.product.pid, _commentController.text);
 
-                              // Add the new comment to the comments list
-                              setState(() {
-                                comments.add(_commentController.text);
-                              });
-                            },
-                            child: Text('Submit Comment'),
-                          ),
-                        ],
-                      ),
-
+                                  // Add the new comment to the comments list
+                                  setState(() {
+                                    comments.add(_commentController.text);
+                                  });
+                                },
+                                child: Text('Submit Comment'),
+                              ),
+                            ],
+                          );
+                        } else {
+                          return SizedBox(); // Return an empty widget for non-Shoppers
+                        }
+                      },
+                    ),
                   ],
                 ),
+
               ),
             );
           },
