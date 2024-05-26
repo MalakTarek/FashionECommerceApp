@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "98214377725",
+    "project_id": "fashionecommerce-b9480",
+    "storage_bucket": "fashionecommerce-b9480.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98214377725:android:c1358d297ba0f527612694",
+        "android_client_info": {
+          "package_name": "com.example.fashion_ecommerce"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAndBskxFZfH7ir479T6VyyLuaP7w8tDYo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
